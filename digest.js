@@ -1,6 +1,6 @@
 var crypto = require('crypto');
 var util = require('util');
-var stringifyUri = require('./sip').stringifyUri; 
+var stringifyUri = require('./sip').stringifyUri;
 
 function unq(a) {
   if(a && a[0] === '"' && a[a.length-1] === '"')
@@ -43,7 +43,7 @@ function calculateHA1(ctx) {
   var userhash = ctx.userhash || calculateUserRealmPasswordHash(ctx.user, ctx.realm, ctx.password);
   if(ctx.algorithm === 'md5-sess') return kd(userhash, ctx.nonce, ctx.cnonce);
 
-  return userhash; 
+  return userhash;
 }
 exports.calculateHA1 = calculateHA1;
 
@@ -95,7 +95,7 @@ function selectQop(challenge, preference) {
   if(!preference)
     return challenge[0];
 
-  if(typeof(preference) === 'string') 
+  if(typeof(preference) === 'string')
     preference = preference.split(',');
 
   for(var i = 0; i !== preference.length; ++i)
@@ -121,7 +121,7 @@ exports.challenge = function(ctx, rs) {
       scheme: 'Digest',
       realm: q(ctx.realm),
       qop: q(ctx.qop),
-      algorithm: q(ctx.algoritm),
+      algorithm: ctx.algoritm,
       nonce: q(ctx.nonce),
       opaque: q(ctx.opaque)
     }
@@ -155,7 +155,7 @@ exports.authenticateRequest = function(ctx, rq, creds) {
     ctx.qop = qop;
 
     return true;
-  } 
+  }
 
   return false;
 }
@@ -219,17 +219,17 @@ exports.signRequest = function (ctx, rq, rs, creds) {
     scheme: 'Digest',
     realm: q(ctx.realm),
     username: q(ctx.user),
-    nonce: q(ctx.nonce), 
+    nonce: q(ctx.nonce),
     uri: q(ctx.uri),
     nc: nc,
-    algorithm: q(ctx.algorithm),
+    algorithm: ctx.algorithm,
     cnonce: q(ctx.cnonce),
     qop: ctx.qop,
     opaque: q(ctx.opaque),
-    response: q(calculateDigest({ha1:ctx.ha1, method:rq.method, nonce:ctx.nonce, nc:nc, cnonce:ctx.cnonce, qop:ctx.qop, uri:ctx.uri, entity:rq.content}))    
+    response: q(calculateDigest({ha1:ctx.ha1, method:rq.method, nonce:ctx.nonce, nc:nc, cnonce:ctx.cnonce, qop:ctx.qop, uri:ctx.uri, entity:rq.content}))
   };
 
-  var hname = ctx.proxy ? 'proxy-authorization' : 'authorization'; 
+  var hname = ctx.proxy ? 'proxy-authorization' : 'authorization';
  
   rq.headers[hname] = (rq.headers[hname] || []).filter(function(x) { return unq(x.realm) !== ctx.realm; });
   rq.headers[hname].push(signature);
@@ -249,7 +249,7 @@ exports.authenticateResponse = function(ctx, rs) {
       ctx.nonce = nextnonce;
       ctx.nc = 0;
 
-      if(ctx.algorithm === 'md5-sess') 
+      if(ctx.algorithm === 'md5-sess')
         ctx.ha1 = kd(ctx.userhash, ctx.nonce, ctx.cnonce);
     }
 
