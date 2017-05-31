@@ -276,7 +276,11 @@ function stringifyUri(uri) {
 exports.stringifyUri = stringifyUri;
 
 function stringifyAOR(aor) {
-  return (aor.name || '') + ' <' + stringifyUri(aor.uri) + '>'+stringifyParams(aor.params);
+  if (aor.name) {
+    return (aor.name || '') + ' <' + stringifyUri(aor.uri) + '>'+stringifyParams(aor.params);
+  } else {
+    return stringifyUri(aor.uri) + stringifyParams(aor.params);
+  }
 }
 
 function stringifyAuthHeader(a) {
