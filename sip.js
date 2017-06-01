@@ -1418,5 +1418,6 @@ exports.start = function(options, callback) {
   exports.decodeFlowUri = r.decodeFlowUri;
   exports.isFlowUri = r.isFlowUri;
   exports.hostname = r.hostname;
+  return r;
 }
 
